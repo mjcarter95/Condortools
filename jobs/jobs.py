@@ -28,8 +28,9 @@ class Job:
                 f.write("python_script        = %s\n" % (self.executable))
                 f.write("indexed_input_files  = %s\n" % ("input.dat"))
                 f.write("indexed_output_files = %s\n" % ("output.dat"))
-                f.write("log                  = %s\n"   % (self.log))
+                f.write("log                  = %s\n" % (self.log))
                 f.write("total_jobs           = %s\n" % (self.n_jobs))
+                f.write("python_version       = python_3.7.4")
             
             print("Created submit file for job: %s" % (self.name))
 
