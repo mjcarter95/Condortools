@@ -23,11 +23,11 @@ class Scheduler:
         Add job to queue
         '''
 
-        name = re.sub('[^A-Za-z0-9]', '', name).lower()
+        name = re.sub('[^A-Za-z0-9 ]', '', name).lower().replace(' ', '_')
         _job = job.Job(name, description=description, queue=1)
         self.job_queue.append(_job)
 
-        print('Job "{0}" successfully added to queue'.format(name))
+        print('[condortools] Job "{0}" successfully added to queue'.format(name))
 
     def build_submit_files(self):
         '''
@@ -47,11 +47,11 @@ class Scheduler:
 
                         f.write('{0} = {1}\n'.format(key, job.description[key]))
                     
-                    f.write('initialdir = jobs/{0}\n'.format(job.name))
-                    f.write('output = logs/out$(PROCESS).log\n')
-                    f.write('error = logs/err$(PROCESS).log\n')
-                    f.write('log = logs/log$(PROCESS).log\n')
-                    f.write('notifications = none\n') # Has to be set to none for UoL Condor
+                    f.write('initialdir = {0}/jobs/{1}\n'.format(os.getcwd(), job.name))
+                    f.write('output = {0}/jobs/{1}/logs/out$(PROCESS).log\n'.format(os.getcwd(), job.name))
+                    f.write('error = {0}/jobs/{1}/logs/err$(PROCESS).log\n'.format(os.getcwd(), job.name))
+                    f.write('log = {0}/jobs/{1}/logs/log$(PROCESS).log\n'.format(os.getcwd(), job.name))
+                    f.write('notification = never\n') # Has to be set to never for UoL Condor
                     f.write('queue {0}\n\n'.format(job.queue))
 
                 job.status = 'built'
@@ -59,7 +59,7 @@ class Scheduler:
                 self.built_jobs.append(job)
 
             except Exception as e:
-                print('Error occurred whilst building job "{0}"\n{1}\n'.format(job.name, e))
+                print('[condortools] Error occurred whilst building job "{0}"\n{1}\n'.format(job.name, e))
                 self.failed_jobs.append(job)
 
     def submit(self):
@@ -71,16 +71,32 @@ class Scheduler:
             return
         elif len(self.built_jobs) == 1:
             job = self.built_jobs.popleft()
-
             try:
-                print("lol")
-            except Exception as e:
-                print('Error occurred whilst submitting job "{0}"\n{1}\n'.format(job.name, e))
+                print('[condortools] Submitting job {0}'.format(job.name))
+                proc = subprocess.run(['condor_submit', '{0}/jobs/{1}/{1}.sub'.format(os.getcwd(), job.name)],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                print('[condortools] Error occurred whilst submitting job "{0}"\n{1}\n'.format(job.name, e))
+                job.updated_at = time.time()
+                job.status = 'failed_submit'
                 self.failed_jobs.append(job)
-
-            job.updated_at = time.time()
-            job.status = 'submitted'
-            self.submitted_jobs.append(job)
+            except Exception as e:
+                print('[condortools] Error occurred whilst submitting job "{0}"\n{1}\n'.format(job.name, e))
+                job.updated_at = time.time()
+                job.status = 'failed_submit'
+                self.failed_jobs.append(job)
+            else:
+                if proc.stderr:
+                    print(proc.stdout.decode('utf-8'))
+                    print(proc.stderr.decode('utf-8'))
+                    job.updated_at = time.time()
+                    job.status = 'failed_submit'
+                    self.failed_jobs.append(job)
+                else:
+                    print(proc.stdout.decode('utf-8'))
+                    job.updated_at = time.time()
+                    job.status = 'submitted'
+                    self.submitted_jobs.append(job)
 
         else:
             temp_submitted_jobs = deque(self.built_jobs)
@@ -94,7 +110,42 @@ class Scheduler:
                         f.write(job_description.read())
                     
                     temp_submitted_jobs.append(job)
+            
+            # Submit jobs
+            try:
+                print('[condortools] Submitting jobs')
+                proc = subprocess.run(['condor_submit', '{0}/jobs/multi_submit.sub'.format(os.getcwd())],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                print('[condortools] Error occurred whilst submitting jobs\n{0}\n'.format(e))
+                updated_at = time.time()
+                status = 'failed_submit'
+                self.failed_jobs.append(temp_submitted_jobs)
+            except Exception as e:
+                print('[condortools] Error occurred whilst submitting jobs"\n{0}\n'.format(e))
+                updated_at = time.time()
+                status = 'failed_submit'
+                self.failed_jobs.append(temp_submitted_jobs)
+            else:
+                if proc.stderr:
+                    print(proc.stdout.decode('utf-8'))
+                    print(proc.stderr.decode('utf-8'))
+                    updated_at = time.time()
+                    status = 'failed_submit'
+                    self.failed_jobs.append(temp_submitted_jobs)
+                else:
+                    print(proc.stdout.decode('utf-8'))
+                    job.updated_at = time.time()
+                    job.status = 'submitted'
+                    self.submitted_jobs.append(job)
     
+    def build_submit(self):
+        '''
+        '''
+
+        self.build_submit_files()
+        self.submit()
+
     def remove_job(self):
         return
     

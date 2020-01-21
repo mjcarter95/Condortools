@@ -16,9 +16,16 @@ class Job():
 
         if not os.path.exists('jobs/' + name):
             os.mkdir('jobs/' + name)
+
+        if not os.path.exists('jobs/' + name + '/logs'):
             os.mkdir('jobs/' + name + '/logs')
-            os.mkdir('jobs/' + name + '/input_data')
-            os.mkdir('jobs/' + name + '/output_data')
+
+
+            '''
+            NOTE: Can't store input and output data in separate directories. For example,
+                  if output listed as /output_data/output$(PROC).json, Condor will try fetch
+                  from /output_data/ temp dir on the worker.
+            '''
         
         self.created_at           = time.time()
         self.updated_at           = time.time()
