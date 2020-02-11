@@ -70,9 +70,10 @@ class Utils:
 
         try:
             print('\n[LOGGING] Executing command {}'.format(subprocess_args))
-            list_files = subprocess.run(subprocess_args, stdout=subprocess.DEVNULL)
+            # process = subprocess.run(subprocess_args, stdout=subprocess.DEVNULL)
+            process = subprocess.run(subprocess_args)
 
-            print('\n[LOGGING] Exit code: {}'.format(list_files.returncode))
+            print('\n[LOGGING] Exit code: {}'.format(process.returncode))
         
         except Exception as e:
             print('\n{}'.format(e))

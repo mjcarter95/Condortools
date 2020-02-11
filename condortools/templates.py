@@ -26,9 +26,10 @@ class Templates:
         base['request_cpus'] = 1
         base['requirements'] = '(Arch=="X86_64") && (OpSys=="WINDOWS")'
         base['initialdir'] = '{}/jobs/$(job_name)'.format(self.utils.cwd)
-        base['output'] = '{}/jobs/$(job_name)/logs/stdout.log'.format(self.utils.cwd)
-        base['error'] = '{}/jobs/$(job_name)/logs/stderr.log'.format(self.utils.cwd)
-        base['log'] = '{}/jobs/$(job_name)/logs/log.log'.format(self.utils.cwd)
+        base['logdir'] = 'logs'
+        base['output'] = '$(logdir)/$(job_name)/stdout.$(cluster).log'
+        base['output'] = '$(logdir)/$(job_name)/stderr.$(cluster).log'
+        base['output'] = '$(logdir)/$(job_name)/log.$(cluster).log'
         base['notification'] = 'never'
         return base
 
