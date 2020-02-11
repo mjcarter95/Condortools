@@ -22,7 +22,7 @@ class Job:
         self.updated_at = time.time()
 
         # Ensure that job and log directories exist
-        if not os.
+        # if not os.
     
     def build_submit_file(self):
         return
@@ -30,7 +30,7 @@ class Job:
     def submit(self, queue=None):
         return
 
-    def build_submit(self, queue=None)
+    def build_submit(self, queue=None):
         self.build_submit_file()
         self.submit(queue=queue)
 
