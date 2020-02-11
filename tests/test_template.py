@@ -15,3 +15,4 @@ print('\n-- Start Job Description --\n{}\n-- End Job Description --\n\n'.format(
 
 job = Job(desc['job_name'], desc, 2)
 job.build_submit_file()
+job.submit()
