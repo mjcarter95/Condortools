@@ -7,9 +7,9 @@ from condortools import Job
 desc = OrderedDict()
 desc['job_name'] = 'predict_update'
 desc['universe'] = 'vanilla'
-desc['executable'] = 'predict_update.py'
 
-job = Job(desc['job_name'], desc['executable'], desc)
+job = Job(desc['job_name'], desc)
 
 print(job)
 print(job.name)
+

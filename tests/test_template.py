@@ -5,15 +5,13 @@ import sys
 sys.path.append('..')
 from condortools import Job, Templates
 
-desc = Templates().vanilla # Use the base vanilla description file
-print('\n{}'.format(desc))
+desc = Templates().vanilla_python # Use the base vanilla description file
 
 # Update some job description parameters
 desc['job_name'] = 'predict_update'
-desc['executable'] = 'predict_update.py'
-print('\n{}'.format(desc))
+desc['python_file'] = 'predict_update.py'
 
-job = Job(desc['job_name'], desc['executable'], desc)
+print('\n-- Start Job Description --\n{}\n-- End Job Description --\n\n'.format(desc))
 
-print(job)
-print(job.name)
+job = Job(desc['job_name'], desc, 2)
+job.build_submit_file()

@@ -1,31 +1,35 @@
-    # 'universe': 'vanilla',
-    # 'should_transfer_files': 'YES',
-    # 'when_to_transfer_output': 'ON_EXIT',
-    # 'executable': 'submit_sum.bat',
-    # 'arguments': 'sum.py $(PROCESS)  input.json output.json python_3.7.4',
-    # 'transfer_input_files': 'input$(PROCESS).json,sum.py,/opt1/condor/apps/python/python_3.7.4.zip,/opt1/condor/apps/matlab/index.exe,/opt1/condor/apps/matlab/unindex.exe',
-    # 'transfer_output_files': 'output$(PROCESS).json',
-    # # 'Rank': '(machine == "slot1@WSTC-028.livad.liv.ac.uk")',
-    # 'request_cpus': 1,
-    # 'requirements': '(Arch=="X86_64") && (OpSys=="WINDOWS")'
-
 from collections import OrderedDict
+
+from .utils import Utils
 
 class Templates:
     '''
     '''
 
     def __init__(self):
-        pass
+        self.utils = Utils()
 
     @property
     def base(self):
+        '''
+        Base job description file for UoL Condor
+        '''
         base = OrderedDict()
-        base['job_name'] = ''
-        base['universe'] = ''
-        base['executable'] = ''
-
-        base['notification'] = 'NEVER' # UoL Condor requirement
+        base['job_name'] = None
+        base['universe'] = None
+        base['executable'] = None
+        base['arguments'] = None
+        base['transfer_input_files'] = None
+        base['transfer_input_files'] = None
+        base['should_transfer_files'] = 'YES'
+        base['when_to_transfer_output'] = 'ON_EXIT'
+        base['request_cpus'] = 1
+        base['requirements'] = '(Arch=="X86_64") && (OpSys=="WINDOWS")'
+        base['initialdir'] = '{}/jobs/$(job_name)'.format(self.utils.cwd)
+        base['output'] = '{}/jobs/$(job_name)/logs/stdout.log'.format(self.utils.cwd)
+        base['error'] = '{}/jobs/$(job_name)/logs/stderr.log'.format(self.utils.cwd)
+        base['log'] = '{}/jobs/$(job_name)/logs/log.log'.format(self.utils.cwd)
+        base['notification'] = 'never'
         return base
 
     @property
@@ -33,3 +37,18 @@ class Templates:
         vanilla = self.base
         vanilla['universe'] = 'vanilla'
         return vanilla
+    
+    @property
+    def vanilla_python(self):
+        '''
+        Base submission file for submitting Python files to UoL Condor
+
+        NOTE: Assumes inputs are labelled from 0 to n (ie input0.dat, input1.dat, ...)
+        '''
+
+        vanilla_python = self.vanilla
+        vanilla_python['python_file'] = ''
+        vanilla_python['executable'] = '{}/helper_files/python_submit.bat'.format(self.utils.module_dir)
+        vanilla_python['transfer_input_files'] = 'input$(PROCESS).json, $(python_file), /opt1/condor/apps/python/python_3.7.4.zip, /opt1/condor/apps/matlab/index.exe, /opt1/condor/apps/matlab/unindex.exe'
+        vanilla_python['transfer_output_files'] = 'output$(PROCESS).json'
+        return vanilla_python
