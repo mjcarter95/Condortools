@@ -1,11 +1,18 @@
+import os
+
+from .utils import Utils
+
 class Scheduler:
     '''
 
     '''
 
-    def __init__(self, retry):
+    def __init__(self, retry=True):
         '''
         '''
+
+        self.utils = Utils()
+        self.utils.create_directory('jobs')
 
         self.retry = retry
 

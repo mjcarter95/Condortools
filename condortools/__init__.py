@@ -1,5 +1,5 @@
 from .job import Job
 from .scheduler import Scheduler
-from .template import Template
+from .templates import Templates
 from .logger import Logger
 from .parser import Parser

@@ -1,8 +1,12 @@
 import os
 import time
+from collections import OrderedDict
+
+from .utils import Utils
+from .logger import Logger
 
 class Job:
-    def __init__(self, name, arguments=None, num_jobs=1):
+    def __init__(self, name, executable, description=None, num_jobs=1):
         '''
         Class representation of a job in HTCondor
 
@@ -12,18 +16,61 @@ class Job:
                             the job directory.
         '''
 
-        self.name       = name
-        self.arguments  = arguments
-        self.num_jobs   = num_jobs
+        if description:
+            assert isinstance(description, dict)
+            description['num_jobs'] = num_jobs
+        
+        self._name        = name
+        self._executable  = executable
+        self._description = description or OrderedDict()
+        self._num_jobs    = int(num_jobs)
+        self._created_at  = time.time()
+        self._updated_at  = time.time()
+        self._status      = 'idle'
 
-        # Properties for tracking job information
-        self.status     = None
-        self.created_at = time.time()
-        self.updated_at = time.time()
+        self._description['job_name'] = name
 
-        # Ensure that job and log directories exist
-        # if not os.
+    def __str__(self):
+        return '\nname: {self.name}, status: {self.status} executable: {self.executable}, description: {list_attr}'.format(self=self, list_attr=self._list_attributes())
+
+    def __repr__(self):
+        return '\nJob(name={self.name}, status={self.status}, executable={self.executable}, description={list_attr})'.format(self=self, list_attr=self._list_attributes())
     
+    @property
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, name):
+        self._name = name
+    
+    @property
+    def executable(self):
+        return self._executable
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def submitted_at(self):
+        return self._submitted_at
+    
+    @property
+    def updated_at(self):
+        return self._updated_at
+    
+    @property
+    def status(self):
+        return self._status
+    
+    def check_status(self):
+
+        ''' Use log parser '''
+
+        self._status = status
+        return status
+
     def build_submit_file(self):
         return
 
@@ -36,9 +83,14 @@ class Job:
 
     def remove(self):
         return
-    
-    def status(self):
+
+    def _list_attributes(self):
         '''
-        Returns the current status of a job
         '''
-        return self.status
+
+        attribute_list = []
+
+        for key in self.description:
+            attribute_list.append('{} = {}'.format(key, self.description[key]))
+
+        return attribute_list
