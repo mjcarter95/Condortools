@@ -18,7 +18,7 @@ class Job:
 
 
         self.utils = Utils()
-        self.utils.create_directory('jobs/{}'.format(name))
+        self.utils.create_directory('jobs/{}/logs'.format(name))
 
         if description:
             assert isinstance(description, dict)

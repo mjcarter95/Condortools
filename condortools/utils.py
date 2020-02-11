@@ -20,7 +20,7 @@ class Utils:
     
     def create_directory(self, dir):
         if not os.path.isdir('{}/{}'.format(self.cwd, dir)):
-            os.mkdir('{}/{}'.format(self.cwd, dir))
+            os.makedirs('{}/{}'.format(self.cwd, dir))
 
     def remove_directory(self, dir):
         if os.path.isdir('{}/{}'.format(self.cwd, dir)):

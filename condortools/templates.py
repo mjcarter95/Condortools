@@ -27,9 +27,9 @@ class Templates:
         base['requirements'] = '(Arch=="X86_64") && (OpSys=="WINDOWS")'
         base['initialdir'] = '{}/jobs/$(job_name)'.format(self.utils.cwd)
         base['logdir'] = 'logs'
-        base['output'] = '$(logdir)/$(job_name)/stdout.$(cluster).log'
-        base['output'] = '$(logdir)/$(job_name)/stderr.$(cluster).log'
-        base['output'] = '$(logdir)/$(job_name)/log.$(cluster).log'
+        base['output'] = '$(logdir)/stdout.$(cluster).log'
+        base['output'] = '$(logdir)/stderr.$(cluster).log'
+        base['output'] = '$(logdir)/log.$(cluster).log'
         base['notification'] = 'never'
         return base
 

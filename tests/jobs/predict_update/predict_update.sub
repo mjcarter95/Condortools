@@ -8,11 +8,11 @@ request_cpus = 1
 requirements = (Arch=="X86_64") && (OpSys=="WINDOWS")
 initialdir = /condor_data/sgmcart3/condortools/tests/jobs/$(job_name)
 logdir = logs
-output = $(logdir)/$(job_name)/log.$(cluster).log
+output = $(logdir)/log.$(cluster).log
 notification = never
 python_file = predict_update.py
 transfer_output_files = output$(PROCESS).json
 #log file added automatically
-log = /condor_data/log_temp/sgmcart3_nc_Tue_11_Feb_22:36:32_GMT_2020
+log = /condor_data/log_temp/sgmcart3_nc_Tue_11_Feb_22:43:06_GMT_2020
 queue 2
 
