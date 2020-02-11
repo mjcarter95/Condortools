@@ -24,7 +24,7 @@ class Scheduler:
         '''
 
         name = re.sub('[^A-Za-z0-9 ]', '', name).lower().replace(' ', '_')
-        _job = job.Job(name, description=description, queue=1)
+        _job = job.Job(name, description=description, queue=queue)
         self.job_queue.append(_job)
 
         print('[condortools] Job "{0}" successfully added to queue'.format(name))
@@ -50,7 +50,7 @@ class Scheduler:
                     f.write('initialdir = {0}/jobs/{1}\n'.format(os.getcwd(), job.name))
                     f.write('output = {0}/jobs/{1}/logs/out$(PROCESS).log\n'.format(os.getcwd(), job.name))
                     f.write('error = {0}/jobs/{1}/logs/err$(PROCESS).log\n'.format(os.getcwd(), job.name))
-                    f.write('log = {0}/jobs/{1}/logs/log$(PROCESS).log\n'.format(os.getcwd(), job.name))
+                    f.write('log = {0}/jobs/{1}/logs/log.log\n'.format(os.getcwd(), job.name))
                     f.write('notification = never\n') # Has to be set to never for UoL Condor
                     f.write('queue {0}\n\n'.format(job.queue))
 
@@ -151,4 +151,12 @@ class Scheduler:
     
     def watch_jobs(self):
         return
+
+    def wait_job(self, job_name):
+        try:
+            print("[condortools] Waiting for all jobs to complete")
+            subprocess.call(['condor_wait', '{0}/jobs/{1}/logs/log.log'.format(os.getcwd(), job_name)])
+
+        except Exception as e:
+            print("Error:\n%s" % (e))
 
