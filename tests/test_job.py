@@ -12,4 +12,5 @@ job = Job(desc['job_name'], desc)
 
 print(job)
 print(job.name)
+print(job.build_submit_file_string())
 

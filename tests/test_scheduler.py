@@ -18,7 +18,13 @@ scheduler.add_submitted('submitted_job', job) # Add job to scheduler queue
 scheduler.add_failed('failed_job', job) # Add job to scheduler queue
 print(scheduler)
 
+scheduler.submit_jobs() # Test single job submisson
+
 scheduler.add_job('{}_2'.format(desc['job_name']), job) # Add job to scheduler queue
+scheduler.add_job('{}_3'.format(desc['job_name']), job) # Add job to scheduler queue
 scheduler.add_submitted('submitted_job_2', job) # Add job to scheduler queue
 scheduler.add_failed('failed_job_2', job) # Add job to scheduler queue
+print(scheduler)
+
+scheduler.submit_jobs() # Test multiple job submisson
 print(scheduler)
