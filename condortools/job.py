@@ -5,6 +5,11 @@ from collections import OrderedDict
 from .utils import Utils
 from .logger import Logger
 
+'''
+------ TO DO -------
+1. Handle jobs with children (i.e. num_jobs > 1)
+'''
+
 class Job:
     def __init__(self, name, description=None, num_jobs=1):
         '''
@@ -78,6 +83,17 @@ class Job:
         
         last_updated = time.time
         self.last_updated(last_updated)
+
+    def build_submit_file_string(self):
+        submit_string = ''
+        for key in self.description:
+            if self.description[key] is None:
+                continue
+            
+            submit_string += '{} = {}\n'.format(key, self.description[key])
+        
+        submit_string += 'queue {}'.format(self.num_jobs)
+        return submit_string
 
     def submit(self, queue=None, test_submit=False):
         description_file = '{0}/jobs/{1}/{1}.sub'.format(self.utils.cwd, self.name)
