@@ -28,8 +28,8 @@ class Templates:
         base['initialdir'] = '{}/jobs/$(job_name)'.format(self.utils.cwd)
         base['logdir'] = 'logs'
         base['output'] = '$(logdir)/stdout.$(cluster).log'
-        base['output'] = '$(logdir)/stderr.$(cluster).log'
-        base['output'] = '$(logdir)/log.$(cluster).log'
+        base['error'] = '$(logdir)/stderr.$(cluster).log'
+        base['log'] = '$(logdir)/log.$(cluster).log'
         base['notification'] = 'never'
         return base
 

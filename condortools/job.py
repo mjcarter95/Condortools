@@ -26,7 +26,6 @@ class Job:
         self._name        = name
         self._description = description or OrderedDict()
         self._num_jobs    = int(num_jobs)
-        self._created_at  = time.time()
         self._updated_at  = time.time()
         self._status      = 'idle'
 
@@ -49,25 +48,21 @@ class Job:
     @property
     def description(self):
         return self._description
-
-    @property
-    def submitted_at(self):
-        return self._submitted_at
     
     @property
-    def updated_at(self):
-        return self._updated_at
+    def num_jobs(self):
+        return self._num_jobs
+
+    @property
+    def last_updated(self):
+        return self._last_updated
     
     @property
     def status(self):
         return self._status
     
-    @property
-    def num_jobs(self):
-        return self._num_jobs
-    
     def check_status(self):
-        return status
+        return self.utils.job_status()
 
     def build_submit_file(self):
         job_dir = '{}/jobs/{}'.format(self.utils.cwd, self.name)
@@ -80,17 +75,31 @@ class Job:
                 f.write('{} = {}\n'.format(key, self.description[key]))
             
             f.write('queue {}'.format(self.num_jobs))
+        
+        last_updated = time.time
+        self.last_updated(last_updated)
 
     def submit(self, queue=None, test_submit=False):
         description_file = '{0}/jobs/{1}/{1}.sub'.format(self.utils.cwd, self.name)
         self.utils.job_submit(description_file, test_submit=test_submit)
 
+        last_updated = time.time
+        self.last_updated(last_updated)
+
     def build_submit(self, queue=None):
         self.build_submit_file()
         self.submit(queue=queue)
 
+        last_updated = time.time
+        self.last_updated(last_updated)
+    
+    def wait(self):
+        self.utils.job_wait(self.description['log'])
+
     def remove(self):
-        return
+
+        last_updated = time.time
+        self.last_updated(last_updated)
 
     def _list_attributes(self):
         attribute_list = []

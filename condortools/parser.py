@@ -6,9 +6,16 @@ class Parser:
     '''
 
     def __init__(self, log_file):
-        self.log_file = log_file
+        self._log_file = log_file
     
-    def read(self):
-        with open(self.log_file, 'r') as f:
-            for line in f:
-                print(line)
+    @property
+    def log_file(self):
+        return self._log_file
+
+    def status_code(self, code):
+        status_codes = {
+            '0': 'idle',
+            '1': 'complete'
+        }
+
+        return status_codes[code]

@@ -28,7 +28,7 @@ class Utils:
 
     def job_status(self):
         ''' TO DO ONCE LOG PARSER COMPLETE '''
-        return
+        return None
 
     def job_submit(self, job_description, test_submit=False):
         command = 'condor_submit'
