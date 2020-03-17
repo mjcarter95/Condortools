@@ -60,7 +60,7 @@ class Job:
 
     @property
     def last_updated(self):
-        return self._last_updated
+        return self._updated_at
     
     @property
     def status(self):
@@ -80,9 +80,8 @@ class Job:
                 f.write('{} = {}\n'.format(key, self.description[key]))
             
             f.write('queue {}'.format(self.num_jobs))
-        
-        last_updated = time.time
-        self.last_updated(last_updated)
+
+        self._updated_at = time.time()
 
     def build_submit_file_string(self):
         submit_string = ''
@@ -99,23 +98,20 @@ class Job:
         description_file = '{0}/jobs/{1}/{1}.sub'.format(self.utils.cwd, self.name)
         self.utils.job_submit(description_file, test_submit=test_submit)
 
-        last_updated = time.time
-        self.last_updated(last_updated)
+        self._updated_at = time.time()
 
     def build_submit(self, queue=None):
         self.build_submit_file()
         self.submit(queue=queue)
 
-        last_updated = time.time
-        self.last_updated(last_updated)
+        self._updated_at = time.time()
     
     def wait(self):
         self.utils.job_wait(self.description['log'])
 
     def remove(self):
 
-        last_updated = time.time
-        self.last_updated(last_updated)
+        self._updated_at = time.time()
 
     def _list_attributes(self):
         attribute_list = []

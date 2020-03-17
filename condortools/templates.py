@@ -20,13 +20,13 @@ class Templates:
         base['executable'] = None
         base['arguments'] = None
         base['transfer_input_files'] = None
-        base['transfer_input_files'] = None
+        base['transfer_output_files'] = None
         base['should_transfer_files'] = 'YES'
         base['when_to_transfer_output'] = 'ON_EXIT'
         base['request_cpus'] = 1
         base['requirements'] = '(Arch=="X86_64") && (OpSys=="WINDOWS")'
         base['initialdir'] = '{}/jobs/$(job_name)'.format(self.utils.cwd)
-        base['logdir'] = 'logs'
+        base['logdir'] = '$(initialdir)/logs'
         base['output'] = '$(logdir)/stdout.$(cluster).log'
         base['error'] = '$(logdir)/stderr.$(cluster).log'
         base['log'] = '$(logdir)/log.$(cluster).log'
