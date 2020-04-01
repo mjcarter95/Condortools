@@ -33,8 +33,17 @@ class Job:
         self._num_jobs    = int(num_jobs)
         self._updated_at  = time.time()
         self._status      = 'idle'
-
+        self._cluster     = None
         self._description['job_name'] = name
+
+        if self.num_jobs > 1:
+            self._children = {}
+
+            for i in range(num_jobs):
+                self._children[i] = {
+                    'updated_at': time.time(),
+                    'status': 'idle'
+                }
 
     def __str__(self):
         return '\nname: {self.name}, status: {self.status}, description: {list_attr}'.format(self=self, list_attr=self._list_attributes())
@@ -107,7 +116,8 @@ class Job:
         self._updated_at = time.time()
     
     def wait(self):
-        self.utils.job_wait(self.description['log'])
+        jobdir = self.description['initialdir'].replace('$(job_name)', self.description['job_name'])
+        self.utils.job_wait(self.description['log'].replace('$(initialdir)', jobdir))
 
     def remove(self):
 

@@ -9,7 +9,7 @@ class Scheduler:
 
     '''
 
-    def __init__(self, retry=True):
+    def __init__(self, policy=0, retry=True):
         '''
         '''
 
@@ -17,6 +17,7 @@ class Scheduler:
         self.utils.create_directory('jobs')
 
         self._retry = retry
+        self._policy = policy
         self._job_queue = {}
         self._submitted_queue = {}
         self._failed_queue = {}
@@ -38,6 +39,18 @@ class Scheduler:
     @property
     def failed_queue(self):
         return self._failed_queue
+
+    @property
+    def policies(self, id):
+        return self._policy
+    
+    @property
+    def policy(self):
+        return self._policy
+    
+    @policy.setter
+    def policy(self, policy_id):
+        self._policy = policy_id
     
     def add_job(self, job_name, job):
         self._job_queue[job_name] = job
