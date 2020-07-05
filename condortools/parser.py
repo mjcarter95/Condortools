@@ -1,50 +1,60 @@
 # https://research.cs.wisc.edu/htcondor/manual/v7.6.2/2_6Managing_Job.html
 import re
-from file_read_backwards import FileReadBackwards
+
+
+def event_desc(code):
+    '''
+    Returns a description of
+    a given event code
+    '''
+    event_codes = {
+        '000': 'Submitted',
+        '001': 'Job Executing',
+        '002': 'Error in Executable',
+        '004': 'Job was checkpointed',
+        '005': 'Job evicted from machine',
+        '006': 'Job terminated',
+        '007': 'Image size of job updated',
+        '008': 'Shadow exception',
+        '009': 'Generic log event',
+        '011': 'Job aborted',
+        '012': 'Job was suspended',
+        '013': 'Job was unsuspended',
+        '014': 'Job was held',
+        '015': 'Job was released'
+    }
+
+    if code in event_codes:
+        return event_codes[code]
+    return
+
 
 class Parser:
     '''
-    Parses Condor log file to get the status of a job
+    Parses Condor log file
     '''
 
     def __init__(self, log_file):
         self._log_file = log_file
+        self._event_dict = None
+        self._start_from = 0
     
     @property
     def log_file(self):
         return self._log_file
 
-    def event_code(self, code):
-        event_codes = {
-            0: 'Submitted',
-            1: 'Job Executing',
-            2: 'Error in Executable',
-            4: 'Job was checkpointed',
-            5: 'Job evicted from machine',
-            6: 'Job terminated',
-            7: 'Image size of job updated',
-            8: 'Shadow exception',
-            9: 'Generic log event',
-            11: 'Job aborted',
-            12: 'Job was suspended',
-            13: 'Job was unsuspended',
-            14: 'Job was held',
-            15: 'Job was released'
-        }
-
-        if code in event_codes:
-            return event_codes[code]
-        
-        return
-
     def extract_event(self, str):
+        submit = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job submitted from host")
         executing = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job executing on host")
         held = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job was held")
         released = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job was released")
         evicted = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job was evicted")
         terminated = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job terminated")
+        exception = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Shadow exception!")
         
-        if executing.search(str):
+        if submit.search(str):
+            return submit.search(str)
+        elif executing.search(str):
             return executing.search(str)
         elif held.search(str):
             return held.search(str)
@@ -54,33 +64,46 @@ class Parser:
             return evicted.search(str)
         elif terminated.search(str):
             return terminated.search(str)
-        
-        return 0
+        elif exception.search(str):
+            return exception.search(str)
+        return None
+    
+    def extract_event_details(self, str):
+        event_match = re.compile("\d\d\d")
+        worker_match = re.compile("\d\d\d.\d\d\d.\d\d\d")
+        event_id = event_match.search(str).group()
+        (cluster_id,
+         worker_id,
+         id_) = worker_match.search(str).group().split(".")
+        return event_id, cluster_id, worker_id
 
     def parse_log_file(self):
         event_string = ''
-
+        start_from = self._start_from
+        event_dict = {}
         with open(self._log_file, encoding="utf-8") as f:
-            for line in f:
-                if line == '...':
-                    print(self.extract_event(event_string))
-                    # print(event_string)
+            for i in range(start_from):
+                f.next()
+            for i, line in enumerate(f):
+                if "..." in line:
+                    (event_id,
+                     cluster_id,
+                     worker_id) = self.extract_event_details(event_string)
+                    if not worker_id in event_dict.keys():
+                        event_dict[worker_id] = {
+                            'cluster_id': cluster_id,
+                            'status_code': event_id,
+                            'status_description': event_desc(event_id),
+                            'status_time': None,
+                            'event_history': [],
+                            'job_details': {}
+                        }
+                    else:
+                        event_dict[worker_id]['status_code'] = event_id
+                        event_dict[worker_id]['status_description'] = event_desc(event_id)
+                    event_dict[worker_id]['event_history'].append(event_string)
                     event_string = ''
                     continue
-                print(line)
                 event_string += line
-
-    def parse_latest_event(self):
-        event_string = ''
-
-        with FileReadBackwards(self._log_file, encoding="utf-8") as f:
-            for i, line in enumerate(f):
-                if i > 0 and line == '...':
-                    break
-                elif i == 0:
-                    continue
-
-                event_string += line
-        
-        return self.extract_event(event_string)
-
+                self._start_from = i    
+        self._event_dict = event_dict

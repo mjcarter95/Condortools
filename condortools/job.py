@@ -5,10 +5,6 @@ from collections import OrderedDict
 from .utils import Utils
 from .logger import Logger
 
-'''
------- TO DO -------
-1. Handle jobs with children (i.e. num_jobs > 1)
-'''
 
 class Job:
     def __init__(self, name, description=None, num_jobs=1):
