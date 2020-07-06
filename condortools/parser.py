@@ -11,17 +11,44 @@ def event_desc(code):
         '000': 'Submitted',
         '001': 'Job Executing',
         '002': 'Error in Executable',
-        '004': 'Job was checkpointed',
-        '005': 'Job evicted from machine',
-        '006': 'Job terminated',
-        '007': 'Image size of job updated',
-        '008': 'Shadow exception',
-        '009': 'Generic log event',
-        '011': 'Job aborted',
-        '012': 'Job was suspended',
-        '013': 'Job was unsuspended',
-        '014': 'Job was held',
-        '015': 'Job was released'
+        '003': 'Job was checkpointed',
+        '004': 'Job evicted from machine',
+        '005': 'Job terminated',
+        '006': 'Image size of job updated',
+        '007': 'Shadow exception',
+        '008': 'Generic log event',
+        '009': 'Job aborted',
+        '010': 'Job was suspended',
+        '011': 'Job was unsuspended',
+        '012': 'Job was held',
+        '013': 'Job was released'
+    }
+
+    if code in event_codes:
+        return event_codes[code]
+    return
+
+
+def event_readable(code):
+    '''
+    Returns a readable description of
+    a given event code
+    '''
+    event_codes = {
+        '000': 'idle',
+        '001': 'running',
+        '002': 'error',
+        '003': 'checkpointed',
+        '004': 'error',
+        '005': 'complete',
+        '006': 'running',
+        '007': 'error',
+        '008': 'running',
+        '009': 'error',
+        '010': 'error',
+        '011': 'running',
+        '012': 'error',
+        '013': 'running'
     }
 
     if code in event_codes:
@@ -36,12 +63,16 @@ class Parser:
 
     def __init__(self, log_file):
         self._log_file = log_file
-        self._event_dict = None
+        self._event_history = None
         self._start_from = 0
     
     @property
     def log_file(self):
         return self._log_file
+
+    @property
+    def event_history(self):
+        return self._event_history
 
     def extract_event(self, str):
         submit = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job submitted from host")
@@ -93,6 +124,7 @@ class Parser:
                         event_dict[worker_id] = {
                             'cluster_id': cluster_id,
                             'status_code': event_id,
+                            'status': event_readable(event_id),
                             'status_description': event_desc(event_id),
                             'status_time': None,
                             'event_history': [],
@@ -100,10 +132,11 @@ class Parser:
                         }
                     else:
                         event_dict[worker_id]['status_code'] = event_id
+                        event_dict[worker_id]['status'] = event_readable(event_id)
                         event_dict[worker_id]['status_description'] = event_desc(event_id)
                     event_dict[worker_id]['event_history'].append(event_string)
                     event_string = ''
                     continue
                 event_string += line
                 self._start_from = i    
-        self._event_dict = event_dict
+        self._event_history = event_dict
