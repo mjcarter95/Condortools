@@ -83,7 +83,7 @@ class Scheduler:
             job = job_tuple[1]
             job_description = '{0}/jobs/{1}/{1}.sub'.format(self.utils.cwd, job_name)
             try:
-                # self.utils.job_submit(job_description, test_submit)
+                job.build_submit()
                 self.add_submitted(job_name, job)
             except Exception as e:
                 print(e)
@@ -114,7 +114,6 @@ class Scheduler:
             job_name = job_tuple[0]
             job = job_tuple[1]
             job.update_status()
-            print(job.status)
             if job.status == 'complete':
                 self.add_completed(job_name, job)
                 continue
