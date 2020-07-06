@@ -1,6 +1,8 @@
 import os
 
 from copy import deepcopy
+from collections import deque
+from time import time, sleep
 
 from .utils import Utils
 
@@ -19,15 +21,22 @@ class Scheduler:
 
         self._retry = retry
         self._policy = policy
-        self._job_queue = {}
-        self._submitted_queue = {}
-        self._failed_queue = {}
+        self._job_queue = deque()
+        self._submitted_queue = deque()
+        self._completed_queue = deque()
+        self._failed_queue = deque()
 
     def __str__(self):
-        return '\nqueued_jobs: {}, submitted_jobs: {}, failed_jobs: {}'.format(len(self._job_queue), len(self._submitted_queue), len(self._failed_queue))
+        return '\nqueued_jobs: {}, submitted_jobs: {}, completed jobs: {}, failed_jobs: {}'.format(len(self._job_queue),
+                                                                                                   len(self._submitted_queue),
+                                                                                                   len(self._completed_queue),
+                                                                                                   len(self._failed_queue))
 
     def __repr__(self):
-        return '\nScheduler(queued_jobs={}, submitted_jobs={}, failed_jobs={})'.format(len(self._job_queue), len(self._submitted_queue), len(self._failed_queue))
+        return '\nScheduler(queued_jobs={}, submitted_jobs={}, completed jobs: {}, failed_jobs={})'.format(len(self._job_queue),
+                                                                                                   len(self._submitted_queue),
+                                                                                                   len(self._completed_queue),
+                                                                                                   len(self._failed_queue))
 
     @property
     def job_queue(self):
@@ -54,50 +63,68 @@ class Scheduler:
         self._policy = policy_id
     
     def add_job(self, job_name, job):
-        self._job_queue[job_name] = job
+        self._job_queue.append((job_name, job))
 
     def add_submitted(self, job_name, job):
-        self._submitted_queue[job_name] = job
+        self._submitted_queue.append((job_name, job))
+
+    def add_completed(self, job_name, job):
+        self._completed_queue.append((job_name, job))
 
     def add_failed(self, job_name, job):
-        self._failed_queue[job_name] = job
+        self._failed_queue.append((job_name, job))
 
     def submit_jobs(self, test_submit=False):
-        if not self._job_queue:
-            return
+        if len(self._job_queue) == 0:
+            print("Oops, the job queue is empty!")
         elif len(self._job_queue) == 1:
-            job_name = list(self._job_queue)[0]
-            job = list(self._job_queue.values())[0]
+            job_tuple = self._job_queue.pop()
+            job_name = job_tuple[0]
+            job = job_tuple[1]
             job_description = '{0}/jobs/{1}/{1}.sub'.format(self.utils.cwd, job_name)
-            print(job_description)
             try:
-                self.utils.job_submit(job_description, test_submit)
-                del self._job_queue[job_name]
-                self._submitted_queue[job_name] = job
+                # self.utils.job_submit(job_description, test_submit)
+                self.add_submitted(job_name, job)
             except Exception as e:
                 print(e)
+                self.add_job(job_name, job)
         else:
             temp_job_queue = deepcopy(self._job_queue)
             temp_submitted_queue = deepcopy(self._submitted_queue)
-            
             submit_file = '{}/jobs/multi_submit.sub'.format(self.utils.cwd)
-
             with open(submit_file, 'w') as f:
-                for job in list(self._job_queue.keys()):
-                    submit_string = self._job_queue[job].build_submit_file_string()
-                    f.write('%s' % submit_string)
-                    self._submitted_queue[job] = self._job_queue[job]
-                    del self._job_queue[job]
-
+                while len(self._job_queue) > 0:
+                    job_tuple = self._job_queue.pop()
+                    job_name = job_tuple[0]
+                    job = job_tuple[1]
+                    submit_string = job.build_submit_file_string()
+                    f.write('{}\n'.format(submit_string))
             try:
                 self.utils.job_submit(submit_file)
             except Exception as e:
+                print(e)
                 self._job_queue = temp_job_queue
                 self._submitted_queue = temp_submitted_queue
-                print(e)
 
-    def watch_jobs(self):
-        return
-    
+    def watch_jobs(self, freq=None):
+        if len(self._submitted_queue) == 0:
+            return
+        while len(self._submitted_queue) > 0:
+            job_tuple = self._submitted_queue.pop()
+            job_name = job_tuple[0]
+            job = job_tuple[1]
+            job.update_status()
+            print(job.status)
+            if job.status == 'complete':
+                self.add_completed(job_name, job)
+                continue
+            elif job.status == 'error':
+                self.add_failed(job_name, job)
+                continue
+            else:
+                self.add_submitted(job_name, job)
+            if freq is not None:
+                sleep(freq)
+
     def resubmit(self):
         return

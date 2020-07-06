@@ -108,6 +108,12 @@
 	   Disk (KB)            :   396285    75000    363897
 	   Memory (MB)          :       11        1         1
 ...
+001 (285.002.000) 06/14 20:58:29 Job executing on host: <138.253.202.69:9616?addrs=138.253.202.69-9616>
+...
+006 (285.002.000) 06/14 20:59:04 Image size of job updated: 42100
+	11  -  MemoryUsage of job (MB)
+	11220  -  ResidentSetSize of job (KB)
+...
 007 (285.002.000) 06/14 21:10:53 Shadow exception!
 	Error from slot1@LLC4-015.livad.liv.ac.uk: FAILED TO SEND INITIAL KEEP ALIVE TO OUR PARENT <138.253.236.146:9620?addrs=138.253.236.146-9620>
 	0  -  Run Bytes Sent By Job

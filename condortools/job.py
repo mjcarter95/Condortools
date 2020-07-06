@@ -121,7 +121,6 @@ class Job:
         jobdir = self.description['initialdir'].replace('$(job_name)', self.description['job_name'])
         self.utils.job_wait(self.description['log'].replace('$(initialdir)', jobdir))
 
-
     def parse_log_file(self):
         self._parser.parse_log_file()
         event_history = self._parser.event_history
@@ -136,14 +135,19 @@ class Job:
             self._children[job_id]['status'] = event_history[job_id]['status']
 
     def update_job_status(self):
+        idle = []
         error = []
         running = []
         for job_id in self._children.keys():
-            if self._children[job_id]['status'] == 'running':
+            if self._children[job_id]['status'] == 'idle':
+                idle.append(job_id)
+            elif self._children[job_id]['status'] == 'running':
                 running.append(job_id)
             elif self._children[job_id]['status'] == 'error':
                 error.append(job_id)
-        if len(running) > 0:
+        if len(idle) > 0:
+            self._status = 'idle'
+        elif len(running) > 0:
             self._status = 'running'
         elif len(error) > 0:
             self._status = 'error'

@@ -113,13 +113,18 @@ class Parser:
         start_from = self._start_from
         event_dict = {}
         with open(self._log_file, encoding="utf-8") as f:
-            for i in range(start_from):
-                f.next()
             for i, line in enumerate(f):
+                if i <= start_from:
+                    continue
                 if "..." in line:
-                    (event_id,
-                     cluster_id,
-                     worker_id) = self.extract_event_details(event_string)
+                    if event_string == '':
+                        continue
+                    try:
+                        (event_id,
+                        cluster_id,
+                        worker_id) = self.extract_event_details(event_string)
+                    except Exception as e:
+                        print(e)
                     if not worker_id in event_dict.keys():
                         event_dict[worker_id] = {
                             'cluster_id': cluster_id,
