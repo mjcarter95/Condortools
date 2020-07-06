@@ -2,32 +2,31 @@ job_name = predict_update
 universe = vanilla
 executable = /condor_data/sgmcart3/condortools/condortools/helper_files/python_submit.bat
 transfer_input_files = input$(PROCESS).json, $(python_file), /opt1/condor/apps/python/python_3.7.4.zip, /opt1/condor/apps/matlab/index.exe, /opt1/condor/apps/matlab/unindex.exe
+transfer_output_files = output$(PROCESS).json
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 request_cpus = 1
 requirements = (Arch=="X86_64") && (OpSys=="WINDOWS")
 initialdir = /condor_data/sgmcart3/condortools/tests/jobs/$(job_name)
-logdir = logs
-output = $(logdir)/stdout.$(cluster).log
-error = $(logdir)/stderr.$(cluster).log
-log = $(logdir)/log.$(cluster).log
+output = $(initialdir)/logs/stdout.log
+error = $(initialdir)/logs/stderr.log
+log = $(initialdir)/logs/log.log
 notification = never
 python_file = predict_update.py
-transfer_output_files = output$(PROCESS).json
-queue 2job_name = predict_update
+queue 2
+job_name = predict_update
 universe = vanilla
 executable = /condor_data/sgmcart3/condortools/condortools/helper_files/python_submit.bat
 transfer_input_files = input$(PROCESS).json, $(python_file), /opt1/condor/apps/python/python_3.7.4.zip, /opt1/condor/apps/matlab/index.exe, /opt1/condor/apps/matlab/unindex.exe
+transfer_output_files = output$(PROCESS).json
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 request_cpus = 1
 requirements = (Arch=="X86_64") && (OpSys=="WINDOWS")
 initialdir = /condor_data/sgmcart3/condortools/tests/jobs/$(job_name)
-logdir = logs
-output = $(logdir)/stdout.$(cluster).log
-error = $(logdir)/stderr.$(cluster).log
-log = $(logdir)/log.$(cluster).log
+output = $(initialdir)/logs/stdout.log
+error = $(initialdir)/logs/stderr.log
+log = $(initialdir)/logs/log.log
 notification = never
 python_file = predict_update.py
-transfer_output_files = output$(PROCESS).json
 queue 2
