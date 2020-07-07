@@ -127,6 +127,7 @@ class Job:
         return event_history
 
     def update_child_statuses(self):
+        print(self._children)
         event_history = self.parse_log_file()
         updated_at = time.time()
         for job_id in event_history.keys():
