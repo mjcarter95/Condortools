@@ -106,6 +106,8 @@ class Parser:
         (cluster_id,
          worker_id,
          id_) = worker_match.search(str).group().split(".")
+        cluster_id = cluster_id[:-1].lstrip("0") + cluster_id[-1:]
+        worker_id = worker_id[:-1].lstrip("0") + worker_id[-1:]
         return event_id, cluster_id, worker_id
 
     def parse_log_file(self):

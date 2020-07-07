@@ -36,7 +36,7 @@ class Job:
         self._description['job_name'] = name
         self._children = {}
         for i in range(num_jobs):
-            self._children[str(i).zfill(3)] = {
+            self._children[i] = {
                 'updated_at': time.time(),
                 'status_code': None,
                 'status': 'idle'
