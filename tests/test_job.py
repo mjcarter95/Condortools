@@ -15,5 +15,6 @@ print(job.name)
 print(job.build_submit_file_string())
 
 job.update_status()
+print(job.cluster_id)
 print(job.children)
 print(job.status)

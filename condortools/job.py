@@ -32,7 +32,7 @@ class Job:
         self._num_jobs = int(num_jobs)
         self._updated_at = time.time()
         self._status = 'idle'
-        self._cluster = None
+        self._cluster_id = None
         self._description['job_name'] = name
         self._children = {}
         for i in range(num_jobs):
@@ -76,6 +76,10 @@ class Job:
     @property
     def status(self):
         return self._status
+    
+    @property
+    def cluster_id(self):
+        return self._cluster_id
 
     @property
     def children(self):
@@ -124,8 +128,6 @@ class Job:
     def parse_log_file(self):
         self._parser.parse_log_file()
         event_history = self._parser.event_history
-        if self._cluster_id = None:
-            self._cluster_id = event_history['cluster_id']
         return event_history
 
     def update_child_statuses(self):
@@ -135,6 +137,8 @@ class Job:
             self._children[job_id]['updated_at'] = updated_at
             self._children[job_id]['status_code'] = event_history[job_id]['status_code']
             self._children[job_id]['status'] = event_history[job_id]['status']
+            if self._cluster_id is None:
+                self._cluster_id = event_history[job_id]['cluster_id']
 
     def update_job_status(self):
         idle = []
