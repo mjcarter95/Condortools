@@ -124,10 +124,11 @@ class Job:
     def parse_log_file(self):
         self._parser.parse_log_file()
         event_history = self._parser.event_history
+        if self._cluster_id = None:
+            self._cluster_id = event_history['cluster_id']
         return event_history
 
     def update_child_statuses(self):
-        print(self._children)
         event_history = self.parse_log_file()
         updated_at = time.time()
         for job_id in event_history.keys():

@@ -21,7 +21,9 @@ def event_desc(code):
         '010': 'Job was suspended',
         '011': 'Job was unsuspended',
         '012': 'Job was held',
-        '013': 'Job was released'
+        '013': 'Job was released',
+        '022': 'Job disconnected',
+        '024': 'Job reconnection failed'
     }
 
     if code in event_codes:
@@ -48,7 +50,9 @@ def event_readable(code):
         '010': 'error',
         '011': 'running',
         '012': 'error',
-        '013': 'running'
+        '013': 'running',
+        '022': 'idle',
+        '024': 'error'
     }
 
     if code in event_codes:
@@ -75,13 +79,13 @@ class Parser:
         return self._event_history
 
     def extract_event(self, str):
-        submit = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job submitted from host")
-        executing = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job executing on host")
-        held = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job was held")
-        released = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job was released")
-        evicted = re.compile("\((\d+\.\d+).*\)\s+(.*)\s+Job was evicted")
+        submit = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job submitted from host")
+        executing = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job executing on host")
+        held = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job was held")
+        released = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job was released")
+        evicted = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job was evicted")
         terminated = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Job terminated")
-        exception = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Shadow exception!")
+        exception = re.compile("\d\d\d+\s+\((\d+\.\d+).*\)\s+(.*)\s+Shadow exception")
         
         if submit.search(str):
             return submit.search(str)
