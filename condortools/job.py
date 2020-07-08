@@ -164,7 +164,12 @@ class Job:
         self.update_child_statuses()
         self.update_job_status()
 
-    def remove(self):
+    def remove(self, worker_id=None):
+        to_kill = self._cluster_id
+        if worker_id is not None:
+            to_kill = '{}.{}'.format(self._cluster_id,
+                                     self.worker_id)
+        self.utils.job_remove(to_kill)
         self._updated_at = time.time()
 
     def _list_attributes(self):
