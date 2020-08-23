@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+from pathlib import Path
+
 
 class Utils:
     def __init__(self, working_dir=os.getcwd()):
@@ -19,9 +21,8 @@ class Utils:
     def module_dir(self):
         return self._module_dir
     
-    def create_directory(self, dir):
-        if not os.path.isdir('{}/{}'.format(self.cwd, dir)):
-            os.makedirs('{}/{}'.format(self.cwd, dir))
+    def create_directory(self, _dir):
+        Path(_dir).mkdir(parents=True, exist_ok=True)
 
     def remove_directory(self, dir):
         if os.path.isdir('{}/{}'.format(self.cwd, dir)):

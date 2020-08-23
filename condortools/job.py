@@ -1,5 +1,6 @@
 import os
 import time
+import uuid
 
 from collections import OrderedDict
 
@@ -21,14 +22,15 @@ class Job:
 
 
         self.utils = Utils()
-        self.utils.create_directory('jobs/{}/logs'.format(name))
 
         if description:
             assert isinstance(description, dict)
         
-        self._name = name
+        self._init_string = str(uuid.uuid1()).replace('-', '')
+        self._name = "{}_{}".format(name, self._init_string)
         self._job_dir = '{0}/jobs/{1}'.format(self.utils.cwd, self.name)
         self._description = description or OrderedDict()
+        self._description['job_name'] = self._name
         self._num_jobs = int(num_jobs)
         self._updated_at = time.time()
         self._status = 'idle'
@@ -42,9 +44,7 @@ class Job:
                 'status': 'idle'
             }
         
-        if not os.path.exists(self._job_dir):
-            os.makedirs(self._job_dir, exist_ok=True)
-
+        self._create_job_dirs()
         self._parser = Parser('{}/logs/log.log'.format(self._job_dir))
 
     def __str__(self):
@@ -64,6 +64,14 @@ class Job:
     @property
     def description(self):
         return self._description
+
+    @description.setter
+    def description(self, description):
+        self._description = description
+
+    @property
+    def job_dir(self):
+        return self._job_dir
     
     @property
     def num_jobs(self):
@@ -179,3 +187,10 @@ class Job:
             attribute_list.append('{} = {}'.format(key, self.description[key]))
 
         return attribute_list
+    
+    def _create_job_dirs(self):
+        self.utils.create_directory('{}/logs'.format(self._job_dir))
+
+    def _delete_dir(self):
+        self.utils.delete_directory('{}/logs'.format(self._job_dir))
+        self.utils.delete_directory('{}'.format(self._job_dir))
