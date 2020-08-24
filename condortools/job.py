@@ -1,6 +1,7 @@
 import os
 import time
 import uuid
+import shutil
 
 from collections import OrderedDict
 
@@ -192,5 +193,5 @@ class Job:
         self.utils.create_directory('{}/logs'.format(self._job_dir))
 
     def _delete_dir(self):
-        self.utils.delete_directory('{}/logs'.format(self._job_dir))
-        self.utils.delete_directory('{}'.format(self._job_dir))
+        self.utils.remove_directory('{}/logs'.format(self._job_dir))
+        self.utils.remove_directory('{}'.format(self._job_dir))

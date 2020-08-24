@@ -24,10 +24,12 @@ class Utils:
     def create_directory(self, _dir):
         Path(_dir).mkdir(parents=True, exist_ok=True)
 
-    def remove_directory(self, dir):
-        if os.path.isdir('{}/{}'.format(self.cwd, dir)):
-            os.rmdir('{}/{}'.format(self.cwd, dir))
-
+    def remove_directory(self, _dir):
+        try:
+            shutil.rmtree(_dir)
+        except:
+            pass
+    
     def job_status(self):
         ''' TO DO ONCE LOG PARSER COMPLETE '''
         return None
