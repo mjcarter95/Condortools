@@ -55,6 +55,8 @@ job.wait()
 
 However, if jobs are held, we will be waiting forever. Actively parsing the log file allows us to react to and manage jobs that are held.
 
+This is shown in practice in the `monte-carlo-naive-wait` example.
+
 #### Parsing the log file
 The Condortools module provides a `Parser` class which reads the log file to determine the current status of jobs. We can utilise this to actively determine the status of jobs and react to held jobs on the fly.
 
