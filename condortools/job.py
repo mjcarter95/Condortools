@@ -131,8 +131,7 @@ class Job:
         self._updated_at = time.time()
     
     def wait(self):
-        jobdir = self.description['initialdir'].replace('$(job_name)', self.description['job_name'])
-        self.utils.job_wait(self.description['log'].replace('$(initialdir)', jobdir))
+        self.utils.job_wait(self.description['log'])
 
     def parse_log_file(self):
         self._parser.parse_log_file()

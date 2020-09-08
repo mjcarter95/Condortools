@@ -1,16 +1,18 @@
-echo %1 %2
+echo %1 %2 %3 %4
 echo on
 
 rem
-rem Wrapper script to run Python scripts
+rem Wrapper script to run Python scripts with indexed input
 rem 
 rem usage:
 rem
-rem run_python python_script 
+rem run_python python_script index inputfile... 
 rem
 
 set python_script=%1
-set python_version=%2
+set index=%2
+set inputfiles=%3
+set python_version=%4
 
 set default_version=python
 
@@ -26,13 +28,21 @@ rem
 del %python_zipfile%
 
 rem
+rem rename indexed input files
+rem
+
+unindex %index% %inputfiles%
+
+rem
 rem pick up the python DLLs and .exes
 rem 
 
 set path=%cd%\dlls;%path%
+
 
 rem
 rem run the Python script
 rem 
 
 python %python_script%
+

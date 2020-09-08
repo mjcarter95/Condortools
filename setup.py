@@ -28,7 +28,7 @@ setup(
     author_email='m.j.carter2@liverpool.ac.uk',
 
     # Choose your license
-    license='MIT',
+    license='Apache',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -81,8 +81,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        # 'filterpy': ['README.rst', 'filterpy/changelog.txt', 'LICENSE', 'filterpy/kalman/tests/*.py'],
-        'condortools': ['README.md', 'LICENSE', 'condortools/tests/*.py']
+        'condortools': ['README.md', 'LICENSE', 'helper_files/*']
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
