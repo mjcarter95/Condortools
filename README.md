@@ -1,3 +1,5 @@
+## As you may have noticed, this repository is no longer updated or maintained. We recommend that you use the far superior [CondorCMF](https://github.com/mjcarter95/CondorCMF) module instead!
+
 # Condortools
 
 Condortools is a Python module for programmatically submitting and managing jobs to HTCondor.  The module was developed and tested on the [University of Liverpool's](http://condor.liv.ac.uk/) HTCondor network. Brief documentation is included in the `docs` folder with supporting example problems in the `examples` folder.
