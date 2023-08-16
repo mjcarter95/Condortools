@@ -1,4 +1,4 @@
-## As you may have noticed, this repository is no longer updated or maintained. We recommend that you use the far superior [CondorCMF](https://github.com/mjcarter95/CondorCMF) module instead!
+## This repository is no longer updated or maintained. We recommend that you use the far superior [CondorCMF](https://github.com/mjcarter95/CondorCMF) module instead!
 
 # Condortools
 
